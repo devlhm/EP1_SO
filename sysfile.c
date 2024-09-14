@@ -18,6 +18,9 @@
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
+
+static int read_count = 0;
+
 static int
 argfd(int n, int *pfd, struct file **pf)
 {
@@ -73,6 +76,8 @@ sys_read(void)
   int n;
   char *p;
 
+  read_count += 1;
+
   if(argfd(0, 0, &f) < 0 || argint(2, &n) < 0 || argptr(1, &p, n) < 0)
     return -1;
   return fileread(f, p, n);
@@ -88,6 +93,11 @@ sys_write(void)
   if(argfd(0, 0, &f) < 0 || argint(2, &n) < 0 || argptr(1, &p, n) < 0)
     return -1;
   return filewrite(f, p, n);
+}
+
+int
+sys_getreadcount(void) {
+  return read_count;
 }
 
 int
